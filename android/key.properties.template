@@ -1,0 +1,13 @@
+# GARASI ABAH BONTOT V4 — Release Signing
+# Copy file ini menjadi android/key.properties (TANPA .template) lalu isi
+# nilai asli. JANGAN commit key.properties atau upload-keystore.jks ke git.
+#
+# Jika Anda SUDAH punya upload-keystore.jks dari build V3.1 sebelumnya,
+# WAJIB pakai file yang sama persis — jangan generate baru — supaya APK V4
+# bisa update APK lama tanpa uninstall (Android menolak update jika
+# signature APK berbeda).
+
+storePassword=ISI_PASSWORD_KEYSTORE
+keyPassword=ISI_PASSWORD_KEY
+keyAlias=upload
+storeFile=upload-keystore.jks

@@ -1,0 +1,66 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!--
+      Izin yang dipakai fitur Backup/Restore (file_picker, share_plus) dan
+      Export PDF/Excel (printing, share_plus). Untuk Android 13+ (API 33+)
+      penyimpanan file terbagi memakai scoped storage bawaan, jadi cukup
+      izin ini untuk kompatibilitas versi lama.
+    -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"/>
+
+    <!--
+      WAJIB untuk fitur sync server: sejak Android 11 (API 30), aplikasi TIDAK
+      BISA saling baca folder Android/data/<package>/ milik app lain, walaupun
+      app itu sendiri (Termux) sudah diberi izin storage. Server Termux di HP
+      yang sama harus membaca file database ini, jadi database WAJIB disimpan
+      di folder publik (/storage/emulated/0/GarasiAbahBontot/), dan itu hanya
+      bisa ditulis langsung (tanpa dialog picker satu per satu) kalau app
+      punya izin "Akses semua file" (All Files Access) ini. Izin ini harus
+      diaktifkan manual oleh user lewat Setelan (lihat ensureStorageAccess()
+      di database_helper.dart) karena Android tidak izinkan dialog otomatis
+      untuk izin sensitif ini.
+    -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage"/>
+
+    <application
+        android:label="GARASI ABAH BONTOT"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme"
+                />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+
+    <!--
+      Diperlukan agar Intent.ACTION_VIEW / file_picker bisa memilih file
+      apapun untuk fitur Restore Database.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="*/*" />
+        </intent>
+    </queries>
+</manifest>

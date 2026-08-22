@@ -1,0 +1,112 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader("UTF-8") { reader ->
+        localProperties.load(reader)
+    }
+}
+
+// ==========================================================
+// RELEASE SIGNING — GARASI ABAH BONTOT V4
+// Baca key.properties (TIDAK di-commit ke git, lihat .gitignore).
+// File ini wajib ada di android/key.properties berisi:
+//   storePassword=...
+//   keyPassword=...
+//   keyAlias=upload
+//   storeFile=upload-keystore.jks
+// Keystore WAJIB sama dengan yang dipakai APK V3.1 yang sudah terpasang,
+// agar signature cocok dan update APK tidak perlu uninstall.
+// Lihat: android/KEYSTORE_SETUP.md
+// ==========================================================
+def keystorePropertiesFile = rootProject.file("key.properties")
+def keystoreProperties = new Properties()
+def hasReleaseSigning = keystorePropertiesFile.exists()
+if (hasReleaseSigning) {
+    keystorePropertiesFile.withReader("UTF-8") { reader ->
+        keystoreProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty("flutter.versionCode")
+if (flutterVersionCode == null) {
+    flutterVersionCode = "1"
+}
+
+def flutterVersionName = localProperties.getProperty("flutter.versionName")
+if (flutterVersionName == null) {
+    flutterVersionName = "1.0.0"
+}
+
+android {
+    namespace "com.garasiabahbontot.garasi_abah_bontot"
+    // Hardcode ke 35. flutter_plugin_android_lifecycle (dependency dari
+    // printing) mewajibkan compile terhadap Android SDK 35 — Flutter build
+    // tool sendiri yang meminta ini secara eksplisit di log build.
+    compileSdk 35
+    // Hardcode NDK version. flutter.ndkVersion resolve ke versi lama
+    // (23.x) padahal semua plugin (file_picker, printing, sqflite_android,
+    // share_plus, dll) butuh 25.1.8937393 — Flutter tool sendiri yang
+    // menyarankan versi ini di log build.
+    ndkVersion "25.1.8937393"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    sourceSets {
+        main.java.srcDirs += "src/main/kotlin"
+    }
+
+    defaultConfig {
+        // ID unik aplikasi. HARUS sama persis dengan struktur folder
+        // MainActivity.kt di src/main/kotlin/com/garasiabahbontot/garasi_abah_bontot/
+        applicationId "com.garasiabahbontot.garasi_abah_bontot"
+        // minSdk 21 aman untuk semua plugin yang dipakai (sqflite, printing,
+        // file_picker, share_plus). Tetap ambil dari flutter.minSdkVersion
+        // sebagai baseline, tapi tidak boleh lebih rendah dari 21.
+        minSdkVersion Math.max(flutter.minSdkVersion, 21)
+        targetSdkVersion 34
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+    }
+
+    signingConfigs {
+        release {
+            if (hasReleaseSigning) {
+                keyAlias keystoreProperties["keyAlias"]
+                keyPassword keystoreProperties["keyPassword"]
+                storeFile keystoreProperties["storeFile"] ? rootProject.file(keystoreProperties["storeFile"]) : null
+                storePassword keystoreProperties["storePassword"]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            // Signing release PERMANEN: pakai upload-keystore.jks lewat
+            // key.properties. Jika key.properties belum ada (mis. build
+            // pertama kali di mesin baru), fallback ke debug signing supaya
+            // `flutter build apk` tetap jalan — tapi APK hasilnya TIDAK BOLEH
+            // dipakai untuk update APK yang sudah live, karena signature
+            // akan berbeda dan Android akan menolak update (harus uninstall).
+            signingConfig hasReleaseSigning ? signingConfigs.release : signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+}
+
+flutter {
+    source "../.."
+}
