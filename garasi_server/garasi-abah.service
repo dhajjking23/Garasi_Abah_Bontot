@@ -1,0 +1,19 @@
+[Unit]
+Description=GARASI ABAH BONTOT Server (Flask + Waitress)
+After=network.target
+
+[Service]
+Type=simple
+User=__USER__
+WorkingDirectory=__APP_DIR__
+ExecStart=__APP_DIR__/venv/bin/python __APP_DIR__/main.py
+Restart=always
+RestartSec=5
+StandardOutput=append:__APP_DIR__/logs/systemd_stdout.log
+StandardError=append:__APP_DIR__/logs/systemd_stderr.log
+
+# Batasi resource wajar untuk VPS kecil (1-2 vCPU) — sesuaikan kalau perlu.
+MemoryMax=512M
+
+[Install]
+WantedBy=multi-user.target

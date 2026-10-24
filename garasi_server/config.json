@@ -1,0 +1,17 @@
+{
+  "server_id": "GAB-001",
+  "server_name": "GARASI ABAH BONTOT",
+  "owner": "Andri",
+  "device": "Poco F3",
+  "host": "0.0.0.0",
+  "port": 8000,
+  "db_path": "data/garasi_abah_bontot.db",
+  "_comment_db_path": "V5.1: DB SEKARANG MILIK SERVER SENDIRI (relatif ke folder garasi_server, di dalam storage privat Termux). TIDAK LAGI membaca file APK Flutter secara langsung -- itu akar masalah 'unable to open database file' (Android 11+ blokir akses lintas-app ke folder Android/data, dan storage publik kena scoped-storage/MIUI battery kill). Server jadi MASTER: admin push perubahan via POST /push, partner tarik via POST /sync + GET /table/{name} seperti biasa. Migrasi data lama satu kali: jalankan migrate_to_master_db.py.",
+  "backup_dir": "/storage/emulated/0/GarasiBackup/",
+  "auto_backup_time": "23:00",
+  "backup_retention": 7,
+  "log_dir": "garasi_server/logs",
+  "api_token": "garasi_abah_bontot",
+  "_comment_token": "Token default sesuai spesifikasi V4.2. Boleh diganti OWNER_ADMIN dari menu Server di aplikasi — asal dicocokkan juga di sini.",
+  "_comment_backup_retention": "Jumlah file backup .db terakhir yang disimpan sebelum yang terlama dihapus otomatis."
+}

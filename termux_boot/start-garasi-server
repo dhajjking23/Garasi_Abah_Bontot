@@ -1,0 +1,10 @@
+#!/data/data/com.termux/files/usr/bin/sh
+# Copy file ini ke: ~/.termux/boot/start-garasi-server
+# Install Termux:Boot dari F-Droid agar script ini otomatis jalan saat HP restart.
+#
+# Pakai "sh" (bukan bash) di baris shebang supaya lebih kompatibel di HP
+# yang bash-nya bermasalah — isi script ini sendiri sengaja dibuat sangat
+# sederhana (cuma 2 baris), logic sesungguhnya sudah ada di start_server.py
+# (Python murni), bukan di sini.
+termux-wake-lock
+python3 ~/garasi_server/start_server.py --boot

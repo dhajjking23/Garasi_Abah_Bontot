@@ -1,0 +1,19 @@
+{
+  "server_id": "GAB-VPS-001",
+  "server_name": "GARASI ABAH BONTOT VPS",
+  "owner": "Andri",
+  "device": "Oracle Cloud VPS",
+  "host": "0.0.0.0",
+  "port": 8000,
+  "environment": "production",
+  "db_path": "data/garasi_abah_bontot.db",
+  "_comment_db_path": "V5.3 VPS: relatif ke folder garasi_server (mis. /opt/garasi-abah-bontot/garasi_server/data/garasi_abah_bontot.db di Ubuntu). Tidak ada lagi ketergantungan path Android sama sekali. Database dibuat otomatis oleh migrate_to_master_db.py (migrasi dari HP) -- lihat README_VPS.md.",
+  "backup_dir": "data/backup",
+  "auto_backup_time": "23:00",
+  "backup_retention": 7,
+  "log_dir": "logs",
+  "api_token": "garasi_abah_bontot",
+  "_comment_token": "SAMA seperti token yang sudah dipakai APK Android -- WAJIB dicocokkan dengan token yang tersimpan di menu Server aplikasi supaya APK tidak perlu update apapun. Ganti ke token acak yang kuat sebelum server ini menerima trafik dari internet publik (VPS = terekspos ke internet, beda dari LAN lokal Termux) -- lalu update juga di menu Server tiap device.",
+  "rate_limit_per_minute": 600,
+  "_comment_rate_limit": "Maksimum request/menit per IP untuk endpoint yang diproteksi token. 600 = longgar untuk auto-sync normal beberapa device, cukup ketat untuk menahan brute-force token."
+}

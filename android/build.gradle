@@ -1,0 +1,46 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+
+// PENTING: beberapa plugin (printing, file_picker, sqflite_android, dst)
+// membawa android/build.gradle SENDIRI dengan compileSdk yang hardcoded
+// rendah (mis. 30/31) — independen dari compileSdk di app/build.gradle.
+// Ini menyebabkan error "AAPT: error: resource android:attr/lStar not
+// found" karena lStar baru ada di API 31+. Blok ini memaksa SEMUA
+// android library subproject (termasuk punya plugin) ikut compile
+// terhadap SDK 35, menimpa nilai bawaan masing-masing plugin.
+//
+// PAKAI afterEvaluate (bukan plugins.withId): baris compileSdkVersion
+// bawaan tiap plugin biasanya ditulis SETELAH mereka apply plugin
+// 'com.android.library' di file build.gradle mereka sendiri, jadi kalau
+// kita override lewat plugins.withId (yang jalan begitu plugin
+// diterapkan), baris compileSdkVersion bawaan plugin yang muncul
+// belakangan di script mereka akan menimpa balik nilai kita. afterEvaluate
+// menjamin override kita jalan PALING TERAKHIR, setelah seluruh script
+// plugin selesai dieksekusi, jadi nilai kitalah yang menang.
+//
+// Ini aman dipakai sekarang (tidak akan kena error "Cannot run
+// Project.afterEvaluate(Closure) when the project is already evaluated")
+// karena baris evaluationDependsOn(":app") yang dulu memaksa urutan
+// evaluasi non-standar sudah dihapus dari file ini.
+subprojects { subproject ->
+    subproject.afterEvaluate {
+        if (subproject.plugins.hasPlugin("com.android.library")) {
+            subproject.android {
+                compileSdkVersion 35
+            }
+        }
+    }
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
